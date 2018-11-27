@@ -1,4 +1,6 @@
 #! /bin/bash
+# Copyright 2018 the .Net Foundation
+# Licensed under the MIT License
 
 function vagrant_up () {
     if vagrant status |grep ^default |grep -q running ; then
@@ -44,31 +46,6 @@ function cmd_clean_web () {
 }
 
 
-function cmd_setup () {
-    # Validate arg
-
-    base_box="$1"
-
-    if [ $# -ne 1 ] ; then
-        echo >&2 "error: unexpected extra argument(s) after the base box name"
-        exit 1
-    fi
-
-    # OK, we can get going.
-
-    if [ ! -e feedstocks ] ; then
-        echo >&2 "error: create a directory or symbolic link here named \"feedstocks\""
-        echo >&2 "       inside of which your feedstocks will reside. For example,"
-        echo >&2 "          \"ln -s ~/sw/feedstocks feedstocks\""
-        exit 1
-    fi
-
-    echo "$base_box" >.cfg_base_box
-    echo "Setup complete."
-    return 0
-}
-
-
 function cmd_sshfs () {
     # Validate arg
 
@@ -101,7 +78,7 @@ function usage () {
     echo "Usage: $0 COMMAND [arguments...]  where COMMAND is one of:"
     echo ""
     echo "   build-web  Build the web client"
-    echo "   setup      Set up the system for operation"
+    echo "   clean-web  Clean files in the web client"
     echo "   sshfs      Mount the Windows filesystem locally using sshfs"
     echo ""
     exit 0
@@ -123,8 +100,6 @@ case "$command" in
         cmd_build_web "$@" ;;
     clean-web)
         cmd_clean_web "$@" ;;
-    setup)
-        cmd_setup "$@" ;;
     sshfs)
         cmd_sshfs "$@" ;;
     *)
