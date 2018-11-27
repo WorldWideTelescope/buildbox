@@ -47,16 +47,7 @@ function cmd_clean_web () {
 
 
 function cmd_sshfs () {
-    # Validate arg
-
-    local_path="$1"
-
-    if [ $# -ne 1 ] ; then
-        echo >&2 "error: unexpected extra argument(s) after the local path"
-        exit 1
-    fi
-
-    # OK, we can get going. Note: My sshfs has a bug where the path to the SSH
+    # My sshfs has a bug where the path to the SSH
     # config file must be absolute. Other options:
     #
     # idmap=user - try to map same-user IDs between filesystems; seems desirable
@@ -64,6 +55,7 @@ function cmd_sshfs () {
     # workaround=rename - make it so that rename-based overwrites work; needed
     #   for Vim to save files
 
+    local_path=winfs
     mkdir -p "$local_path"
     vagrant_up
     cfg_tmp=$(mktemp)
@@ -79,7 +71,7 @@ function usage () {
     echo ""
     echo "   build-web  Build the web client"
     echo "   clean-web  Clean files in the web client"
-    echo "   sshfs      Mount the Windows filesystem locally using sshfs"
+    echo "   sshfs      Mount the Windows filesystem to winfs/ using sshfs"
     echo ""
     exit 0
 }
