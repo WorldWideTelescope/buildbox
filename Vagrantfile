@@ -12,11 +12,6 @@ end
 Vagrant.configure("2") do |config|
   config.vm.box = base_box
 
-  config.vm.provision "file0",
-                      type: "file",
-                      source: "wwt-bash.bat",
-                      destination: "/Windows/wwt-bash.bat"
-
   config.vm.provision "stage0",
                       type: "shell",
                       binary: true,
