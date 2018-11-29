@@ -46,6 +46,11 @@ function cmd_clean_web () {
 }
 
 
+function cmd_serve_web () {
+    run_command "Serving" "wwt-web-client/serve.log" "serve_web.ps1"
+}
+
+
 function cmd_sshfs () {
     # My sshfs has a bug where the path to the SSH
     # config file must be absolute. Other options:
@@ -71,6 +76,7 @@ function usage () {
     echo ""
     echo "   build-web  Build the web client"
     echo "   clean-web  Clean files in the web client"
+    echo "   serve-web  Serve the current web pack on http://MSEDGEWIN10:26993/"
     echo "   sshfs      Mount the Windows filesystem to winfs/ using sshfs"
     echo ""
     exit 0
@@ -92,6 +98,8 @@ case "$command" in
         cmd_build_web "$@" ;;
     clean-web)
         cmd_clean_web "$@" ;;
+    serve-web)
+        cmd_serve_web "$@" ;;
     sshfs)
         cmd_sshfs "$@" ;;
     *)

@@ -25,9 +25,15 @@ choco upgrade all
 
 choco install bower git iisexpress nodejs.install nuget.commandline
 
-# Make a directory for WWT work
+# Make a local directory for staging WWT files
 
 mkdir C:\wwt
+
+# Setup to allow the host machine to talk to the IIS Express server used to
+# test the web client.
+
+Set-NetFirewallProfile -all -DefaultInboundAction Allow -DefaultOutboundAction Allow
+netsh http add urlacl url=http://localhost:26993/Default.aspx user=everyone
 
 # Message to user
 

@@ -62,6 +62,15 @@ GiB of hard disk space.
 7. Run `vagrant reload` to reboot the machine and apply system updates.
 8. Run `vagrant provision --provision-with stage1` to install Visual Studio.
    This will take a while.
+9. **Optional but recommended:** For the time being, if you want to test out
+   the webclient site in your browser, you must access it under the hostname
+   `MSEDGEWIN10` even though you are really accessing it through your local
+   machine. On most systems, you can do this by adding the text `MSEDGEWIN10`
+   to the line of `/etc/hosts` that refers to the IP address `127.0.0.1`.
+   After making such a modification, the relevant line might look like:
+   ```
+   127.0.0.1    localhost localhost.localdomain MSEDGEWIN10
+   ```
 
 ## Operation
 
@@ -73,6 +82,16 @@ Web client code:
 ```
 ./driver.sh build-web
 ```
+
+If you followed the last setup step above and run the following command:
+
+```
+./driver.sh serve-web
+```
+
+Then you will be able to try the webclient by navigating your browser to
+<http://MSEDGEWIN10:26993/Default.aspx>.
+
 
 ## Legalities
 

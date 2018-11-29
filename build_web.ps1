@@ -1,3 +1,7 @@
+# -*- powershell -*-
+# Copyright 2018 the .Net Foundation
+# Licensed under the MIT License
+#
 # This is a PowerShell script for building the web client. It's pretty simple
 # but escaping the commands in the driver.sh script would be gnarly.
 
