@@ -76,21 +76,20 @@ GiB of hard disk space.
 
 Once the box is set up, you can interact with it through the script
 `driver.sh`. Run `./driver.sh` without arguments to see help about the
-subcommands that it makes available. The following command will rebuild the
-Web client code:
+subcommands that it makes available. The following commands will fully rebuild and serve
+the web client code:
 
 ```
 ./driver.sh build-web
-```
-
-If you followed the last setup step above and run the following command:
-
-```
+./driver.sh npm install
+./driver.sh npm install -g grunt-cli
+./driver.sh grunt sdk dist-css dist-js
 ./driver.sh serve-web
 ```
 
-Then you will be able to try the webclient by navigating your browser to
-<http://MSEDGEWIN10:26993/Default.aspx>.
+For the last command to work, you need to have followed the last setup step
+listed above. Then you will be able to try the webclient by navigating your
+browser to <http://MSEDGEWIN10:26993/Default.aspx>.
 
 
 ## Legalities

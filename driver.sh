@@ -36,6 +36,25 @@ function run_command () {
 }
 
 
+function just_run_command () {
+    # $1 - basename of PowerShell script to run (e.g. "build_web.ps1")
+    # $2... - extra args to pass to the PowerShell script. Escaping of
+    #         arguments could get gnarly.
+
+    script_base="$1"
+    shift
+
+    vagrant_up
+    cfg_tmp=$(mktemp)
+    vagrant ssh-config >$cfg_tmp
+
+    ssh -F $cfg_tmp default \
+        powershell -NoProfile -NoLogo -ExecutionPolicy Bypass \
+        -File c:\\\\vagrant\\\\$script_base "$@"
+    rm -f $cfg_tmp
+}
+
+
 function cmd_build_web () {
     run_command "Building" "wwt-web-client/build.log" "build_web.ps1"
 }
@@ -43,6 +62,16 @@ function cmd_build_web () {
 
 function cmd_clean_web () {
     run_command "Cleaning" "wwt-web-client/clean.log" "build_web.ps1" "/t:clean"
+}
+
+
+function cmd_grunt () {
+    just_run_command "clientcmd.ps1" grunt "$@"
+}
+
+
+function cmd_npm () {
+    just_run_command "clientcmd.ps1" npm "$@"
 }
 
 
@@ -76,6 +105,8 @@ function usage () {
     echo ""
     echo "   build-web  Build the web client"
     echo "   clean-web  Clean files in the web client"
+    echo "   grunt      Run a grunt task in the webclient"
+    echo "   npm        Run an npm task in the webclient"
     echo "   serve-web  Serve the current web pack on http://MSEDGEWIN10:26993/"
     echo "   sshfs      Mount the Windows filesystem to winfs/ using sshfs"
     echo ""
@@ -98,6 +129,10 @@ case "$command" in
         cmd_build_web "$@" ;;
     clean-web)
         cmd_clean_web "$@" ;;
+    grunt)
+        cmd_grunt "$@" ;;
+    npm)
+        cmd_npm "$@" ;;
     serve-web)
         cmd_serve_web "$@" ;;
     sshfs)
