@@ -72,26 +72,6 @@ function cmd_serve_web () {
 }
 
 
-function cmd_sshfs () {
-    # My sshfs has a bug where the path to the SSH
-    # config file must be absolute. Other options:
-    #
-    # idmap=user - try to map same-user IDs between filesystems; seems desirable
-    # transform_symlinks - make absolute symlinks relative; also seems desirable
-    # workaround=rename - make it so that rename-based overwrites work; needed
-    #   for Vim to save files
-
-    local_path=winfs
-    mkdir -p "$local_path"
-    vagrant_up
-    cfg_tmp=$(mktemp)
-    vagrant ssh-config >$cfg_tmp
-    sshfs -F $(realpath $cfg_tmp) -o idmap=user -o transform_symlinks \
-          -o workaround=rename default:/C: "$local_path"
-    rm -f $cfg_tmp
-}
-
-
 function usage () {
     echo "Usage: $0 COMMAND [arguments...]  where COMMAND is one of:"
     echo ""
@@ -100,7 +80,6 @@ function usage () {
     echo "   grunt      Run a grunt task in the webclient"
     echo "   npm        Run an npm task in the webclient"
     echo "   serve-web  Serve the current web pack on http://MSEDGEWIN10:26993/"
-    echo "   sshfs      Mount the Windows filesystem to winfs/ using sshfs"
     echo ""
     exit 0
 }
@@ -127,8 +106,6 @@ case "$command" in
         cmd_npm "$@" ;;
     serve-web)
         cmd_serve_web "$@" ;;
-    sshfs)
-        cmd_sshfs "$@" ;;
     *)
         echo >&2 "error: unrecognized COMMAND \"$command\""
         usage ;;
