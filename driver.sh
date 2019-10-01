@@ -2,6 +2,8 @@
 # Copyright 2018-2019 the .Net Foundation
 # Licensed under the MIT License
 
+top="$(dirname "$0")"
+
 function vagrant_up () {
     if vagrant status |grep ^default |grep -q running ; then
         :
@@ -46,12 +48,12 @@ function just_run_command () {
 
 
 function cmd_build_web () {
-    run_command "Building" "wwt-web-client/build.log" "build_web.ps1"
+    run_command "Building" "$top/wwt-web-client/build.log" "build_web.ps1"
 }
 
 
 function cmd_clean_web () {
-    run_command "Cleaning" "wwt-web-client/clean.log" "build_web.ps1" "/t:clean"
+    run_command "Cleaning" "$top/wwt-web-client/clean.log" "build_web.ps1" "/t:clean"
 }
 
 
@@ -66,7 +68,7 @@ function cmd_npm () {
 
 
 function cmd_serve_web () {
-    run_command "Serving" "wwt-web-client/serve.log" "serve_web.ps1"
+    run_command "Serving" "$top/wwt-web-client/serve.log" "serve_web.ps1"
 }
 
 

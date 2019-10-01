@@ -3,7 +3,7 @@
 # Licensed under the MIT License
 
 begin
-  base_box = File.read('.cfg_base_box').strip()
+  base_box = File.read(File.join(__dir__, '.cfg_base_box')).strip()
 rescue Errno::ENOENT
   raise 'configure this box by recording the base box name in ".cfg_base_box" (see README.md)'
 end
