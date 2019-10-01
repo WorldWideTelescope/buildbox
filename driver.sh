@@ -1,5 +1,5 @@
 #! /bin/bash
-# Copyright 2018 the .Net Foundation
+# Copyright 2018-2019 the .Net Foundation
 # Licensed under the MIT License
 
 function vagrant_up () {
@@ -25,14 +25,9 @@ function run_command () {
     shift 3
 
     vagrant_up
-    cfg_tmp=$(mktemp)
-    vagrant ssh-config >$cfg_tmp
-
     echo "$gerund; logs also captured to \"$logfile\" ..."
-    ssh -F $cfg_tmp default \
-        powershell -NoProfile -NoLogo -InputFormat None -ExecutionPolicy Bypass \
-        -File c:\\\\vagrant\\\\$script_base "$@" |& tee "$logfile"
-    rm -f $cfg_tmp
+    vagrant winrm -c "powershell -NoProfile -NoLogo -InputFormat None -ExecutionPolicy Bypass \
+        -File c:\\\\vagrant\\\\$script_base $*" |& tee "$logfile"
 }
 
 
@@ -45,13 +40,8 @@ function just_run_command () {
     shift
 
     vagrant_up
-    cfg_tmp=$(mktemp)
-    vagrant ssh-config >$cfg_tmp
-
-    ssh -F $cfg_tmp default \
-        powershell -NoProfile -NoLogo -ExecutionPolicy Bypass \
-        -File c:\\\\vagrant\\\\$script_base "$@"
-    rm -f $cfg_tmp
+    vagrant winrm -c "powershell -NoProfile -NoLogo -ExecutionPolicy Bypass \
+        -File c:\\\\vagrant\\\\$script_base $*"
 }
 
 
@@ -66,12 +56,12 @@ function cmd_clean_web () {
 
 
 function cmd_grunt () {
-    just_run_command "clientcmd.ps1" grunt "$@"
+    just_run_command "clientcmd.ps1" "grunt $@"
 }
 
 
 function cmd_npm () {
-    just_run_command "clientcmd.ps1" npm "$@"
+    just_run_command "clientcmd.ps1" "npm $@"
 }
 
 
