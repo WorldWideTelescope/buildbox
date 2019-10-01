@@ -67,6 +67,11 @@ function cmd_npm () {
 }
 
 
+function cmd_nuget () {
+    just_run_command "clientcmd.ps1" "nuget $@"
+}
+
+
 function cmd_serve_web () {
     run_command "Serving" "$top/wwt-web-client/serve.log" "serve_web.ps1"
 }
@@ -79,6 +84,7 @@ function usage () {
     echo "   clean-web  Clean files in the web client"
     echo "   grunt      Run a grunt task in the webclient"
     echo "   npm        Run an npm task in the webclient"
+    echo "   nuget      Run a nuget task in the webclient"
     echo "   serve-web  Serve the current web pack on http://MSEDGEWIN10:26993/"
     echo ""
     exit 0
@@ -104,6 +110,8 @@ case "$command" in
         cmd_grunt "$@" ;;
     npm)
         cmd_npm "$@" ;;
+    nuget)
+        cmd_nuget "$@" ;;
     serve-web)
         cmd_serve_web "$@" ;;
     *)

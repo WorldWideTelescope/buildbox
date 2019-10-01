@@ -103,6 +103,7 @@ the web client code:
 ./driver.sh build-web
 ./driver.sh npm install
 ./driver.sh npm install -g grunt-cli
+./driver.sh nuget install -OutputDirectory ..\\packages
 ./driver.sh grunt sdk dist-css dist-js
 ./driver.sh serve-web
 ```
