@@ -1,5 +1,5 @@
 # -*- powershell -*-
-# Copyright 2018 the .Net Foundation
+# Copyright 2018-2019 the .Net Foundation
 # Licensed under the MIT License
 #
 # "stage1" provisioning: run after the user has installed dotnet3.5 and
@@ -13,5 +13,6 @@ choco install visualstudio2015community --timeout=4800 --package-parameters "--A
 
 # Message to user
 
-echo ""
+echo "."
+echo "."
 echo "See README.md for the next step"

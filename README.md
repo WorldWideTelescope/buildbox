@@ -1,8 +1,8 @@
-# WWT Builder Box in Vagrant
+# AAS WorldWide Telescope Builder Box in Vagrant
 
 This repository contains a [Vagrant](https://www.vagrantup.com/) framework for
-that compiles the WorldWide Telescope C# code. This lets you develop the core
-WWT application on any major operating system.
+compiling the AAS WorldWide Telescope C# code. This lets you develop the core WWT
+application on any major operating system.
 
 **Note**: this framework is still a work-in-progress! We are working to evolve
 the WWT build systems to make compilation as easy as possible, but we’re not
@@ -13,7 +13,8 @@ all the way there yet.
 This framework works by defining a Vagrant “box” (a virtual machine image)
 that is preloaded with the setup needed to compile the WWT codebase. By
 running the `driver.sh` script included in the directory containing this
-README, you can launch builds of the various components of the WWT framework.
+README, you can easily build the Windows-centeric components of the WWT
+framework.
 
 ## One-time Setup
 
@@ -26,27 +27,40 @@ GiB of hard disk space.
    Instructions for doing so are beyond the scope of this README; try
    [the official documentation](https://www.vagrantup.com/docs/installation/)
    or Google if needed.
-2. Check out this repository on to your local machine, with a command like:
+2. Check out this repository on to your local machine.
+3. Go to the
+   [official Microsoft VM page](https://developer.microsoft.com/en-us/microsoft-edge/tools/vms/)
+   and download an image. Select a virtual machine type of “MSEdge on Win10”
+   and a platform of “Vagrant”. Start downloading the file.
+4. While that is happening, **make note of the VM version number**, which
+   appears in the “Virtual machine” dropdown menu. Set the version number as a
+   variable in your shell with a command like this:
    ```
-   git clone --recurse-submodules https://github.com/WorldWideTelescope/buildbox.git
+   $ VMVERSION=1809 # <== change this, maybe!
    ```
-   (If your check cannot use the `--recurse-submodules` flag, run `git
-   submodule update --init --recursive` to fetch the submodules tied to this
-   repository.)
-3. Inside the buildbox directory, check out one of the WWT application
-   repositories. You probably want the “webclient” repository, which can be
-   checked out like so:
+   We’re assuming you’re running Linux here. The version shown is the most
+   recent value as of 2019.
+5. Record this version in a configuration file that the
+   [Vagrantfile](https://www.vagrantup.com/docs/vagrantfile/) will look
+   at:
    ```
-   git clone https://github.com/WorldWideTelescope/wwt-web-client.git
+   $ echo msedgewin10_$VMVERSION >.cfg_base_box
    ```
-4. [Follow the instructions to set up the base Windows Vagrant box](https://github.com/pkgw/msedgewin10-newssh-box#instructions).
-   This procedure will require a download of about 4.5 GiB and, at its
-   high-water mark, take up about 30 GiB of disk space.
-5. Run `vagrant up` in this directory. This will perform some basic setup of
+6. Your download should have created a file named `MSEdge.Win10.Vagrant.zip`.
+   Unzip this in the directory containing this README. You should get a file
+   named `MSEdge - Win10.box`. It is OK to delete the Zip file after this is
+   done.
+7. Run the following command to import this box into your Vagrant system as a
+   “base box”, including the VM version in the name:
+   ```
+   $ vagrant box add --name msedgewin10_$VMVERSION "MSEdge - Win10.box"
+   ```
+   After this succeeds, you can remove the `MSEdge - Win10.box` file.
+8. Run `vagrant up` in this directory. This will perform some basic setup of
    your build machine.
-6. Use the VirtualBox GUI to “show” your running machine — it will likely have
-   a name starting with `buildbox_default_`. If you need to log in, you can do
-   so using the password `Passw0rd!`. Click on the circle in the lower-left
+9. Use the VirtualBox GUI to “show” your running machine — it will likely have
+   a name starting with `buildbox_default_`. If you need to type a password,
+   it is `Passw0rd!`. Click on the circle in the lower-left
    corner of the screen to open the Cortana search box. Type `cmd`. Wait for
    ”Command Prompt” to show up as the best match. Right-click on that entry
    and choose “Run as administrator”. When Windows asks you if you want to let
@@ -59,18 +73,24 @@ GiB of hard disk space.
    saying that it succeeded. Then type `exit` to close the shell. In the
    VirtualBox menu “Machine”, choose “Detach GUI” to close the window and
    detach from the virtual machine’s display.
-7. Run `vagrant reload` to reboot the machine and apply system updates.
-8. Run `vagrant provision --provision-with stage1` to install Visual Studio.
-   This will take a while.
-9. **Optional but recommended:** For the time being, if you want to test out
-   the webclient site in your browser, you must access it under the hostname
-   `MSEDGEWIN10` even though you are really accessing it through your local
-   machine. On most systems, you can do this by adding the text `MSEDGEWIN10`
-   to the line of `/etc/hosts` that refers to the IP address `127.0.0.1`.
-   After making such a modification, the relevant line might look like:
-   ```
-   127.0.0.1    localhost localhost.localdomain MSEDGEWIN10
-   ```
+10. Run `vagrant reload` to reboot the machine and apply system updates.
+11. Run `vagrant provision --provision-with stage1` to install Visual Studio.
+    This will take a while.
+12. While that’s happening, clone one of the WWT application repositories into
+    this directory. You probably want the “webclient” repository, which can be
+    cloned like so:
+    ```
+    git clone https://github.com/WorldWideTelescope/wwt-web-client.git
+    ```
+13. **Optional but recommended:** For the time being, if you want to test out
+    the webclient site in your browser, you must access it under the hostname
+    `MSEDGEWIN10` even though you are really accessing it through your local
+    machine. On most systems, you can do this by adding the text `MSEDGEWIN10`
+    to the line of `/etc/hosts` that refers to the IP address `127.0.0.1`.
+    After making such a modification, the relevant line might look like:
+    ```
+    127.0.0.1    localhost localhost.localdomain MSEDGEWIN10
+    ```
 
 ## Operation
 
@@ -83,6 +103,7 @@ the web client code:
 ./driver.sh build-web
 ./driver.sh npm install
 ./driver.sh npm install -g grunt-cli
+./driver.sh nuget install -OutputDirectory ..\\packages
 ./driver.sh grunt sdk dist-css dist-js
 ./driver.sh serve-web
 ```
@@ -94,5 +115,22 @@ browser to <http://MSEDGEWIN10:26993/Default.aspx>.
 
 ## Legalities
 
-The .Net Foundation owns the copyright to the work in this repository. It is
+The [.NET Foundation] owns the copyright to the work in this repository. It is
 licensed under the MIT License.
+
+[.NET Foundation]: https://dotnetfoundation.org/
+
+
+## Acknowledgements
+
+The AAS WorldWide Telescope (WWT) system, including this repository, is a
+[.NET Foundation] project. Work on WWT and this repository has been supported
+by the [American Astronomical Society](https://aas.org/) (AAS), the US
+[National Science Foundation] (grants [1550701] and [1642446]), the
+[Gordon and Betty Moore Foundation], and [Microsoft].
+
+[National Science Foundation]: https://www.nsf.gov/
+[1550701]: https://www.nsf.gov/awardsearch/showAward?AWD_ID=1550701
+[1642446]: https://www.nsf.gov/awardsearch/showAward?AWD_ID=1642446
+[Gordon and Betty Moore Foundation]: https://www.moore.org/
+[Microsoft]: https://microsoft.com/

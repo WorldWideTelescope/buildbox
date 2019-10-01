@@ -1,5 +1,5 @@
 # -*- powershell -*-
-# Copyright 2018 the .Net Foundation
+# Copyright 2018-2019 the .Net Foundation
 # Licensed under the MIT License
 #
 # Initial provisioning of the WWT buildbox machine. Very early on, we need the
@@ -7,6 +7,18 @@
 # little.
 
 Set-ExecutionPolicy Bypass -Scope Process -Force
+
+# Avoid automatic poweroff!
+
+powercfg /hibernate off
+powercfg /x monitor-timeout-ac 0
+powercfg /x monitor-timeout-dc 0
+powercfg /x disk-timeout-dc 0
+powercfg /x disk-timeout-ac 0
+powercfg /x standby-timeout-ac 0
+powercfg /x standby-timeout-dc 0
+powercfg /x hibernate-timeout-dc 0
+powercfg /x hibernate-timeout-ac 0
 
 # Install Chocolatey:
 
@@ -21,9 +33,11 @@ if (!(Test-Path("$ChocoInstallPath\choco.exe"))) {
 choco feature enable -n allowGlobalConfirmation
 choco upgrade all
 
-# Bits we can install now
+# Bits we can install now. Within each invocation, keep packages alphabetized;
+# separate invocations are for dependency ordering.
 
-choco install bower git iisexpress nodejs.install nuget.commandline
+choco install nodejs.install
+choco install bower git iisexpress nuget.commandline
 
 # Make a local directory for staging WWT files
 
@@ -37,5 +51,6 @@ netsh http add urlacl url=http://localhost:26993/Default.aspx user=everyone
 
 # Message to user
 
-echo ""
+echo "."
+echo "."
 echo "See README.md for the next step -- you must log in to the machine graphically."

@@ -1,6 +1,8 @@
 #! /bin/bash
-# Copyright 2018 the .Net Foundation
+# Copyright 2018-2019 the .Net Foundation
 # Licensed under the MIT License
+
+top="$(dirname "$0")"
 
 function vagrant_up () {
     if vagrant status |grep ^default |grep -q running ; then
@@ -25,14 +27,9 @@ function run_command () {
     shift 3
 
     vagrant_up
-    cfg_tmp=$(mktemp)
-    vagrant ssh-config >$cfg_tmp
-
     echo "$gerund; logs also captured to \"$logfile\" ..."
-    ssh -F $cfg_tmp default \
-        powershell -NoProfile -NoLogo -InputFormat None -ExecutionPolicy Bypass \
-        -File c:\\\\vagrant\\\\$script_base "$@" |& tee "$logfile"
-    rm -f $cfg_tmp
+    vagrant winrm -c "powershell -NoProfile -NoLogo -InputFormat None -ExecutionPolicy Bypass \
+        -File c:\\\\vagrant\\\\$script_base $*" |& tee "$logfile"
 }
 
 
@@ -45,58 +42,38 @@ function just_run_command () {
     shift
 
     vagrant_up
-    cfg_tmp=$(mktemp)
-    vagrant ssh-config >$cfg_tmp
-
-    ssh -F $cfg_tmp default \
-        powershell -NoProfile -NoLogo -ExecutionPolicy Bypass \
-        -File c:\\\\vagrant\\\\$script_base "$@"
-    rm -f $cfg_tmp
+    vagrant winrm -c "powershell -NoProfile -NoLogo -ExecutionPolicy Bypass \
+        -File c:\\\\vagrant\\\\$script_base $*"
 }
 
 
 function cmd_build_web () {
-    run_command "Building" "wwt-web-client/build.log" "build_web.ps1"
+    run_command "Building" "$top/wwt-web-client/build.log" "build_web.ps1"
 }
 
 
 function cmd_clean_web () {
-    run_command "Cleaning" "wwt-web-client/clean.log" "build_web.ps1" "/t:clean"
+    run_command "Cleaning" "$top/wwt-web-client/clean.log" "build_web.ps1" "/t:clean"
 }
 
 
 function cmd_grunt () {
-    just_run_command "clientcmd.ps1" grunt "$@"
+    just_run_command "clientcmd.ps1" "grunt $@"
 }
 
 
 function cmd_npm () {
-    just_run_command "clientcmd.ps1" npm "$@"
+    just_run_command "clientcmd.ps1" "npm $@"
+}
+
+
+function cmd_nuget () {
+    just_run_command "clientcmd.ps1" "nuget $@"
 }
 
 
 function cmd_serve_web () {
-    run_command "Serving" "wwt-web-client/serve.log" "serve_web.ps1"
-}
-
-
-function cmd_sshfs () {
-    # My sshfs has a bug where the path to the SSH
-    # config file must be absolute. Other options:
-    #
-    # idmap=user - try to map same-user IDs between filesystems; seems desirable
-    # transform_symlinks - make absolute symlinks relative; also seems desirable
-    # workaround=rename - make it so that rename-based overwrites work; needed
-    #   for Vim to save files
-
-    local_path=winfs
-    mkdir -p "$local_path"
-    vagrant_up
-    cfg_tmp=$(mktemp)
-    vagrant ssh-config >$cfg_tmp
-    sshfs -F $(realpath $cfg_tmp) -o idmap=user -o transform_symlinks \
-          -o workaround=rename default:/C: "$local_path"
-    rm -f $cfg_tmp
+    run_command "Serving" "$top/wwt-web-client/serve.log" "serve_web.ps1"
 }
 
 
@@ -107,8 +84,8 @@ function usage () {
     echo "   clean-web  Clean files in the web client"
     echo "   grunt      Run a grunt task in the webclient"
     echo "   npm        Run an npm task in the webclient"
+    echo "   nuget      Run a nuget task in the webclient"
     echo "   serve-web  Serve the current web pack on http://MSEDGEWIN10:26993/"
-    echo "   sshfs      Mount the Windows filesystem to winfs/ using sshfs"
     echo ""
     exit 0
 }
@@ -133,10 +110,10 @@ case "$command" in
         cmd_grunt "$@" ;;
     npm)
         cmd_npm "$@" ;;
+    nuget)
+        cmd_nuget "$@" ;;
     serve-web)
         cmd_serve_web "$@" ;;
-    sshfs)
-        cmd_sshfs "$@" ;;
     *)
         echo >&2 "error: unrecognized COMMAND \"$command\""
         usage ;;

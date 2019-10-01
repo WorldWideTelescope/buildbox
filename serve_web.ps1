@@ -18,7 +18,7 @@ $rundir = "$runparent\webclient"
 # because it is (fakily) network-mounted. So, copy the current tree to a local
 # directory.
 
-rm -recurse $rundir
+rm -Recurse -ErrorAction Ignore $rundir
 cd $srcdir
 cp -recurse webclient $runparent
 cd $rundir
@@ -38,7 +38,7 @@ $cfg = Get-Content .vs\config\applicationhost.config |
 # Ready to go!
 
 echo ""
-echo "THE Q KEY DOES NOT WORK! Kill the server over SSH with `"taskkill /f /im iisexpress.exe`""
+echo "THE Q KEY DOES NOT WORK! Kill the server with `"vagrant winrm -c `"taskkill /f /im iisexpress.exe`"`""
 echo ""
 
 &'c:\Program Files\IIS Express\iisexpress.exe' /trace:i /site:webclient /config:applicationhost.config
